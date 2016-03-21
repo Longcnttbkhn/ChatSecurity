@@ -1,4 +1,4 @@
-package attt.chatsecurity.server.views;
+package attt.chatsecurity.client.views;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -28,29 +28,36 @@ public class MainView extends JFrame {
 	private JButton btnNext;
 	private JButton btnSend;
 
-	private JLabel lbIPServer;
-	private JLabel lbPort;
-
+	private JTextField[] tfIp;
 	private JFrame main;
 	private Container cp;
 	private JPanel panelNhapThongTin;
-	private JPanel panelWait;
 	private JPanel panelChat;
 
 	public MainView() {
 		main = this;
-
 		panelNhapThongTin = new JPanel();
 
-		panelNhapThongTin.setBorder(new TitledBorder("Nhap thong tin server"));
-		panelNhapThongTin.setLayout(new GridLayout(3, 2));
+		panelNhapThongTin.setBorder(new TitledBorder("Nhap thong tin client"));
+		panelNhapThongTin.setLayout(new GridLayout(4, 2, 0, 3));
+		panelNhapThongTin.add(new JLabel("IP server"));
+		JPanel jpIp = new JPanel(new GridLayout(1, 4, 1, 0));
+		tfIp = new JTextField[4];
+		tfIp[0] = new JTextField(4);
+		tfIp[1] = new JTextField(4);
+		tfIp[2] = new JTextField(4);
+		tfIp[3] = new JTextField(4);
+		jpIp.add(tfIp[0]);
+		jpIp.add(tfIp[1]);
+		jpIp.add(tfIp[2]);
+		jpIp.add(tfIp[3]);
+		panelNhapThongTin.add(jpIp);
 		panelNhapThongTin.add(new JLabel("Port"));
 		tfPort = new JTextField(20);
 		panelNhapThongTin.add(tfPort);
 		panelNhapThongTin.add(new JLabel("Your name"));
 		tfName = new JTextField(20);
 		panelNhapThongTin.add(tfName);
-
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
 
@@ -61,27 +68,8 @@ public class MainView extends JFrame {
 			}
 		});
 		panelNhapThongTin.add(btnExit);
-
 		btnNext = new JButton("Next");
 		panelNhapThongTin.add(btnNext);
-
-		panelWait = new JPanel();
-		panelWait.setBorder(new TitledBorder("Waiting for client"));
-		panelWait.setLayout(new GridLayout(3, 1));
-		lbIPServer = new JLabel("");
-		panelWait.add(lbIPServer);
-		lbPort = new JLabel();
-		panelWait.add(lbPort);
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				System.exit(0);
-			}
-		});
-		panelWait.add(btnCancel);
 
 		panelChat = new JPanel();
 		panelChat.setBorder(new TitledBorder("Chatting"));
@@ -116,7 +104,7 @@ public class MainView extends JFrame {
 		btnSend = new JButton("Send");
 		panelChat.add(btnSend, BorderLayout.EAST);
 
-		setTitle("Server");
+		setTitle("Client");
 		cp = getContentPane();
 		cp.setLayout(new FlowLayout());
 		cp.add(panelNhapThongTin);
@@ -127,30 +115,34 @@ public class MainView extends JFrame {
 		setVisible(true);
 	}
 
-	public int getPort() {
-		if (tfPort.getText() != null) {
-			lbPort.setText("Port: " + tfPort.getText());
-			return Integer.parseInt(tfPort.getText());
-		} else
-			return -1;
+	public byte[] getIpServer() {
+		byte[] ip = new byte[4];
+		ip[0] = Byte.parseByte(tfIp[0].getText());
+		ip[1] = Byte.parseByte(tfIp[1].getText());
+		ip[2] = Byte.parseByte(tfIp[2].getText());
+		ip[3] = Byte.parseByte(tfIp[3].getText());
+		return ip;
 	}
 
 	public String getName() {
 		return tfName.getText();
 	}
 
-	public void setOnClickNextButton(ActionListener action) {
-		btnNext.addActionListener(action);
-	}
-
-	public void setIPServer(String ip) {
-		lbIPServer.setText("IP Server: " + ip);
+	public int getPort() {
+		if (tfPort.getText() != null) {
+			return Integer.parseInt(tfPort.getText());
+		} else
+			return -1;
 	}
 
 	public String getMessage() {
 		String message = tfMessage.getText();
 		tfMessage.setText(null);
 		return message;
+	}
+
+	public void setOnClickNextButton(ActionListener action) {
+		btnNext.addActionListener(action);
 	}
 
 	public void showText(String message) {
@@ -161,14 +153,8 @@ public class MainView extends JFrame {
 		btnSend.addActionListener(action);
 	}
 
-	public void changePanelWait() {
-		panelNhapThongTin.setVisible(false);
-		cp.add(panelWait);
-		pack();
-	}
-
 	public void changePanelChat() {
-		panelWait.setVisible(false);
+		panelNhapThongTin.setVisible(false);
 		cp.add(panelChat);
 		pack();
 	}

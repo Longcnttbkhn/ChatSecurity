@@ -11,85 +11,86 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import attt.chatsecurity.server.views.MainView;
 
 public class MainController {
+	private MainView main;
+	private ServerSocket serverSocket;
+	private Socket socket;
+	private BufferedReader input;
+	private PrintWriter output;
+	private int port;
+	private String name;
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				MainView main = new MainView();
-				main.setOnClickNextButton(new ActionListener() {
+	public MainController() {
+		main = new MainView();
+		main.setOnClickNextButton(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				port = main.getPort();
+				name = main.getName();
+				try {
+					main.setIPServer(InetAddress.getLocalHost().getHostAddress());
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				main.changePanelWait();
+				Thread t = new Thread(new Runnable() {
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void run() {
 						// TODO Auto-generated method stub
 						try {
-							InetAddress inet = InetAddress.getLocalHost();
-							main.setIPServer(inet.getAddress());
-							int port = main.getPort();
-							String name = main.getName();
-							main.changePanelWait();
-							Thread t = new Thread(new Runnable() {
+							serverSocket = new ServerSocket(port);
+							socket = serverSocket.accept();
+							input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							output = new PrintWriter(socket.getOutputStream());
+							Thread t1 = new Thread(new Runnable() {
+
 								@Override
 								public void run() {
 									// TODO Auto-generated method stub
-									try (ServerSocket serverSocket = new ServerSocket(port);
-											Socket socket = serverSocket.accept();
-											BufferedReader input = new BufferedReader(
-													new InputStreamReader(socket.getInputStream()));
-											PrintWriter output = new PrintWriter(socket.getOutputStream());) {
-										Thread t1 = new Thread(new Runnable() {
-											public void run() {
-												String message;
-												while (true) {
-													try {
-														message = input.readLine();
-														if (message == null)
-															break;
-														main.showText(message);
-													} catch (IOException e) {
-														// TODO Auto-generated catch
-														// block
-														e.printStackTrace();
-													}
-												}
-											}
-										});
-										t1.start();
-										main.changePanelChat();
-										main.setOnClickSendButton(new ActionListener() {
-											
-											@Override
-											public void actionPerformed(ActionEvent e) {
-												// TODO Auto-generated method stub
-												String message;
-												message = main.getMessage();
-												output.println(name + ": " + message); 			// sử dụng ouput để gửi
-												main.showText("bạn: " + message + "\n");
-												output.flush();
-											}
-										});
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
+									String message;
+									while (true) {
+										try {
+											message = input.readLine();
+											if (message == null)
+												break;
+											main.showText(message + "\n");
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										
 									}
 								}
 							});
-							t.start();
-						} catch (UnknownHostException e2) {
+							main.changePanelChat();
+							main.setOnClickSendButton(new ActionListener() {
+								
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									// TODO Auto-generated method stub
+									String message;
+									message = main.getMessage();
+									output.println(name + ": " + message); 
+									main.showText("bạn: " + message + "\n");
+									output.flush();
+								}
+							});
+							t1.start();
+							
+						} catch (IOException e1) {
 							// TODO Auto-generated catch block
-							e2.printStackTrace();
+							e1.printStackTrace();
 						}
 					}
 				});
-
+				t.start();
 			}
 		});
-	}
 
-}
+}}
