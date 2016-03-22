@@ -38,7 +38,7 @@ public class MainView extends JFrame {
 		main = this;
 		panelNhapThongTin = new JPanel();
 
-		panelNhapThongTin.setBorder(new TitledBorder("Nhap thong tin client"));
+		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin client"));
 		panelNhapThongTin.setLayout(new GridLayout(4, 2, 0, 3));
 		panelNhapThongTin.add(new JLabel("IP server"));
 		JPanel jpIp = new JPanel(new GridLayout(1, 4, 1, 0));
@@ -117,10 +117,10 @@ public class MainView extends JFrame {
 
 	public byte[] getIpServer() {
 		byte[] ip = new byte[4];
-		ip[0] = Byte.parseByte(tfIp[0].getText());
-		ip[1] = Byte.parseByte(tfIp[1].getText());
-		ip[2] = Byte.parseByte(tfIp[2].getText());
-		ip[3] = Byte.parseByte(tfIp[3].getText());
+		ip[0] = (byte) Integer.parseInt(tfIp[0].getText());
+		ip[1] = (byte) Integer.parseInt(tfIp[1].getText());
+		ip[2] = (byte) Integer.parseInt(tfIp[2].getText());
+		ip[3] = (byte) Integer.parseInt(tfIp[3].getText());
 		return ip;
 	}
 

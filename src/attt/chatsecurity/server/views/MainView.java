@@ -42,7 +42,7 @@ public class MainView extends JFrame {
 
 		panelNhapThongTin = new JPanel();
 
-		panelNhapThongTin.setBorder(new TitledBorder("Nhap thong tin server"));
+		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin server"));
 		panelNhapThongTin.setLayout(new GridLayout(3, 2));
 		panelNhapThongTin.add(new JLabel("Port"));
 		tfPort = new JTextField(20);
