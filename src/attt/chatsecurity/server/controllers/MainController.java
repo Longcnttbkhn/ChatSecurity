@@ -2,13 +2,14 @@ package attt.chatsecurity.server.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import javax.swing.JOptionPane;
 
 import attt.chatsecurity.server.models.Security;
 import attt.chatsecurity.server.views.MainView;
@@ -22,6 +23,7 @@ public class MainController {
 	private int port;
 	private String name;
 	private Security security;
+
 	public MainController() {
 		main = new MainView();
 		main.setOnClickNextButton(new ActionListener() {
@@ -46,52 +48,51 @@ public class MainController {
 						try {
 							serverSocket = new ServerSocket(port);
 							socket = serverSocket.accept();
-							input = new ObjectInputStream(socket.getInputStream());
 							output = new ObjectOutputStream(socket.getOutputStream());
+							input = new ObjectInputStream(socket.getInputStream());
 							Thread t1 = new Thread(new Runnable() {
 
 								@Override
 								public void run() {
 									// TODO Auto-generated method stub
 									String message;
-									while (true) {
-										try {
-											message = (String) input.readObject();
-											if (message == null)
-												break;
+									try {
+										while (true) {
+											message = security.decryption(input.readObject());
 											main.showText(message + "\n");
-										} catch (IOException | ClassNotFoundException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
 										}
-										
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
 									}
 								}
 							});
 							security = new Security(input, output);
 							main.changePanelChat();
 							main.setOnClickSendButton(new ActionListener() {
-								
+
 								@Override
 								public void actionPerformed(ActionEvent e) {
 									// TODO Auto-generated method stub
 									String message;
 									message = main.getMessage();
+									main.showText("bạn: " + message + "\n");
 									try {
-										output.writeObject(message);
-										main.showText("bạn: " + message + "\n");
+										output.writeObject(security.encryption(name + ": " + message));
 										output.flush();
-									} catch (IOException e1) {
+									} catch (Exception e1) {
 										// TODO Auto-generated catch block
 										e1.printStackTrace();
-									}	
+									}
 								}
 							});
 							t1.start();
-							
-						} catch (IOException e1) {
+
+						} catch (Exception e1) {
 							// TODO Auto-generated catch block
-							e1.printStackTrace();
+//							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Can't connect to client");
+							
 						}
 					}
 				});
@@ -99,4 +100,5 @@ public class MainController {
 			}
 		});
 
-}}
+	}
+}

@@ -6,78 +6,97 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.StringTokenizer;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
 
 public class Security {
-	
+
 	private String fileSecurityName = "Server_security.txt";
-	private byte[] security_key;
-//	private byte[] section_key;
-	
-	public Security(ObjectInputStream input, ObjectOutputStream output) {
+	private ChatKey security_key;
+	private ChatKey section_key;
+	// private byte[] section_key;
+
+	public Security(ObjectInputStream input, ObjectOutputStream output) throws Exception {
 		File file = new File(fileSecurityName);
-		if (file.exists()){
+		if (file.exists()) {
 			try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-				security_key = new BigInteger(reader.readLine()).toByteArray();
-				BigInteger random1 = new BigInteger(32, new SecureRandom());
-				System.out.println(random1);
-				output.writeObject(encryption(random1.toString(), security_key));
+				security_key = new ChatKey(reader.readLine());
+				SecureRandom secureRandom = new SecureRandom();
+				Long random1 = secureRandom.nextLong();
+				output.writeObject(encryption(random1, security_key));
 				output.flush();
-				
-				SealedObject r1_r2 = (SealedObject) input.readObject();
-				
-//				section_key = new BigInteger(64, new SecureRandom()).toByteArray();
-				
-				
-			} catch (IOException | ClassNotFoundException e){
-				System.out.println(e.getMessage());
+
+				String receive = (String) decryption((SealedObject) input.readObject(), security_key);
+				StringTokenizer strToken = new StringTokenizer(receive, "|");
+				random1 -= 1;
+				Long random1_ = new Long(strToken.nextToken());
+				if (random1.equals(random1_)) {
+					Long random2 = new Long(strToken.nextToken());
+					random2 -= 1;
+					BigInteger key = new BigInteger(63, secureRandom);
+					section_key = new ChatKey(key.toByteArray());
+					String send = random2 + "|" + key;
+					output.writeObject(encryption(send, security_key));
+					output.flush();
+				} else {
+					throw new Exception("Kết nối không an toàn");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-	
-	/*public String decryption(String ciphertext){
-		String plaintext = null;
-		return plaintext;
+
+	public SealedObject encryption(String plaintext) throws Exception {
+		return encryption(plaintext, section_key);
 	}
-	
-	public String encryption(String plaintext) {
-		String ciphertext = null;
-		return ciphertext;
-	}*/
-	
-	public SealedObject encryption(Serializable ciphertext, byte[] encoded) {
+
+	public String decryption(Object ciphertext) throws Exception {
+		return (String) decryption((SealedObject) ciphertext, section_key);
+	}
+
+	public SealedObject encryption(Serializable plaintext, ChatKey key) throws Exception {
+		SealedObject ciphertext = null;
 		Cipher cipher;
-		SealedObject sealedObject = null;
-		try {
-			cipher = Cipher.getInstance("DES");
-			cipher.init(Cipher.ENCRYPT_MODE, new ChatKey(encoded));
-			sealedObject = new SealedObject(ciphertext, cipher);
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | IOException
-				| InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return sealedObject;
+		cipher = Cipher.getInstance("DES");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+		ciphertext = new SealedObject(plaintext, cipher);
+		return ciphertext;
+	}
+
+	public Object decryption(SealedObject ciphertext, ChatKey key) throws Exception {
+		Object plaintext = null;
+		Cipher cipher = Cipher.getInstance("DES");
+		cipher.init(Cipher.DECRYPT_MODE, key);
+		plaintext = ciphertext.getObject(cipher);
+		return plaintext;
+
 	}
 }
 
-class ChatKey implements Key{
+class ChatKey implements Key {
 	private byte[] encoded;
+
 	public ChatKey(byte[] encoded) {
 		// TODO Auto-generated constructor stub
 		this.encoded = encoded;
+	}
+
+	public ChatKey(String encoded) {
+		// TODO Auto-generated constructor stub
+		BigInteger key = new BigInteger(encoded);
+		this.encoded = key.toByteArray();
 	}
 
 	@Override
@@ -89,7 +108,7 @@ class ChatKey implements Key{
 	@Override
 	public String getFormat() {
 		// TODO Auto-generated method stub
-		return "PKCS#8";
+		return "RAW";
 	}
 
 	@Override
@@ -97,12 +116,5 @@ class ChatKey implements Key{
 		// TODO Auto-generated method stub
 		return encoded;
 	}
-	
+
 }
-
-
-
-
-
-
-
