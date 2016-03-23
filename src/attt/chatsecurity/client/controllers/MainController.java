@@ -9,7 +9,7 @@ import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
-import attt.chatsecurity.client.models.Security;
+import attt.chatsecurity.client.models.SecurityClient;
 import attt.chatsecurity.client.views.MainView;
 
 public class MainController {
@@ -20,7 +20,7 @@ public class MainController {
 	private String name;
 	private byte[] ipServer;
 	private int port;
-	private Security security;
+	private SecurityClient security;
 
 	public MainController() {
 		main = new MainView();
@@ -49,11 +49,12 @@ public class MainController {
 								}
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
-								e.printStackTrace();
+//								e.printStackTrace();
+								JOptionPane.showMessageDialog(null, "Disconnected");
 							}
 						}
 					});
-					security = new Security(input, output);
+					security = new SecurityClient(input, output);
 					main.changePanelChat();
 					main.setOnClickSendButton(new ActionListener() {
 
@@ -68,7 +69,8 @@ public class MainController {
 								output.flush();
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
-								e1.printStackTrace();
+//								e1.printStackTrace();
+								JOptionPane.showMessageDialog(null, "Disconnected");
 							}
 						}
 					});

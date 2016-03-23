@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
-import attt.chatsecurity.server.models.Security;
+import attt.chatsecurity.server.models.SecurityServer;
 import attt.chatsecurity.server.views.MainView;
 
 public class MainController {
@@ -22,7 +22,7 @@ public class MainController {
 	private ObjectOutputStream output;
 	private int port;
 	private String name;
-	private Security security;
+	private SecurityServer security;
 
 	public MainController() {
 		main = new MainView();
@@ -63,11 +63,12 @@ public class MainController {
 										}
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
-										e.printStackTrace();
+//										e.printStackTrace();
+										JOptionPane.showMessageDialog(null, "Disconnected");
 									}
 								}
 							});
-							security = new Security(input, output);
+							security = new SecurityServer(input, output);
 							main.changePanelChat();
 							main.setOnClickSendButton(new ActionListener() {
 
@@ -82,7 +83,8 @@ public class MainController {
 										output.flush();
 									} catch (Exception e1) {
 										// TODO Auto-generated catch block
-										e1.printStackTrace();
+//										e1.printStackTrace();
+										JOptionPane.showMessageDialog(null, "Disconnected");
 									}
 								}
 							});
