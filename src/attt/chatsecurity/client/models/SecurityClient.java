@@ -54,7 +54,7 @@ public class SecurityClient extends Security {
 					Object inputObject = input.readObject();
 					
 					JOptionPane.showMessageDialog(null,
-							"Server yêu cầu mật khẩu để kết nối \n" + "Nhập mật khẩu để kết nối", "Client-Message",
+							"Server yêu cầu nhập mật khẩu \n" + "nhập mật khẩu để kết nối", "Client-Message",
 							JOptionPane.WARNING_MESSAGE);
 					JPasswordField password = new JPasswordField(10);
 					int action = JOptionPane.showConfirmDialog(null, password, "Enter password",

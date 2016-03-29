@@ -42,7 +42,7 @@ public class MainView extends JFrame {
 
 		panelNhapThongTin = new JPanel();
 
-		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin server"));
+		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin Client"));
 		panelNhapThongTin.setLayout(new GridLayout(3, 2));
 		panelNhapThongTin.add(new JLabel("Port"));
 		tfPort = new JTextField(20);
@@ -87,6 +87,7 @@ public class MainView extends JFrame {
 		panelChat.setBorder(new TitledBorder("Chatting"));
 		panelChat.setLayout(new BorderLayout());
 		taShowChat = new JTextArea(10, 25);
+		taShowChat.setEditable(false);
 		taShowChat.setLineWrap(true);
 		taShowChat.setWrapStyleWord(true);
 		panelChat.add(new JScrollPane(taShowChat), BorderLayout.NORTH);

@@ -55,7 +55,7 @@ public class SecurityServer extends Security {
 			if (file.createNewFile()) {
 				try (PrintWriter writer = new PrintWriter(file)) {
 					JOptionPane.showMessageDialog(null, "Bạn chưa thiết lập kết nối an toàn \n"
-							+ "Nhập mật khẩu để thiết lập kết nối an toàn ", "Server-Message", JOptionPane.WARNING_MESSAGE);
+							+ "Nhập mật khẩu để thiết lập kết nối an toàn", "Server-Message", JOptionPane.WARNING_MESSAGE);
 					JPasswordField password = new JPasswordField(10);
 					int action = JOptionPane.showConfirmDialog(null, password, "Enter password", JOptionPane.OK_CANCEL_OPTION);
 					if (action == 0) {

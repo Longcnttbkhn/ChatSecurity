@@ -38,7 +38,7 @@ public class MainView extends JFrame {
 		main = this;
 		panelNhapThongTin = new JPanel();
 
-		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin client"));
+		panelNhapThongTin.setBorder(new TitledBorder("Nhập thông tin Client"));
 		panelNhapThongTin.setLayout(new GridLayout(4, 2, 0, 3));
 		panelNhapThongTin.add(new JLabel("IP server"));
 		JPanel jpIp = new JPanel(new GridLayout(1, 4, 1, 0));
@@ -75,6 +75,7 @@ public class MainView extends JFrame {
 		panelChat.setBorder(new TitledBorder("Chatting"));
 		panelChat.setLayout(new BorderLayout());
 		taShowChat = new JTextArea(10, 25);
+		taShowChat.setEditable(false);
 		taShowChat.setLineWrap(true);
 		taShowChat.setWrapStyleWord(true);
 		panelChat.add(new JScrollPane(taShowChat), BorderLayout.NORTH);
